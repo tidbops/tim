@@ -19,7 +19,7 @@ type InitCommandFlags struct {
 }
 
 var (
-	initCmdFlags = InitCommandFlags{}
+	initCmdFlags = &InitCommandFlags{}
 )
 
 func NewInitCommand() *cobra.Command {
@@ -38,13 +38,13 @@ func NewInitCommand() *cobra.Command {
 }
 
 func initCommandFunc(cmd *cobra.Command, args []string) {
-	if name := cmd.Flag("name"); name == nil || name.Value.String() == "" {
+	if initCmdFlags.Name == "" {
 		cmd.Println("name flag is required")
 		cmd.Println(cmd.UsageString())
 		return
 	}
 
-	if version := cmd.Flag("tidb-version"); version == nil || version.Value.String() == "" {
+	if initCmdFlags.Version == "" {
 		cmd.Println("tidb-version flag is required")
 		cmd.Println(cmd.UsageString())
 		return
@@ -61,3 +61,4 @@ func initCommandFunc(cmd *cobra.Command, args []string) {
 
 	cmd.Printf("Init tidb-ansible files to path %s, version %s", initCmdFlags.Path, initCmdFlags.Version)
 }
+
