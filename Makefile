@@ -15,8 +15,9 @@ endif
 export GO111MODULE := on
 GOOS := $(if $(GOOS),$(GOOS),linux)
 GOARCH := $(if $(GOARCH),$(GOARCH),amd64)
-GOENV  := GO15VENDOREXPERIMENT="1" CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH)
-GO     := $(GOENV) go build
+GOENV  := GO15VENDOREXPERIMENT="1" GOOS=$(GOOS) GOARCH=$(GOARCH)
+GO     := $(GOENV) CGO_ENABLED=0 go build
+CGO   := $(GOENV) CGO_ENABLED=1 go build
 GOTEST := CGO_ENABLED=0 go test -v -cover
 
 default: build
@@ -24,7 +25,7 @@ default: build
 build: tim tim-server
 
 tim:
-	$(GO) -ldflags '$(LDFLAGS)' -o bin/tim cmd/tim/*.go
+	$(CGO) -ldflags '$(LDFLAGS)' -o bin/tim cmd/tim/*.go
 
 tim-server:
-	$(GO) -ldflags '$(LDFLAGS)' -o bin/tim-server cmd/tim-server/*.go
+	$(CGO) -ldflags '$(LDFLAGS)' -o bin/tim-server cmd/tim-server/*.go

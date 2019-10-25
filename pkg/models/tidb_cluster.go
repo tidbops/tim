@@ -7,6 +7,15 @@ import (
 	"time"
 )
 
+type TiDBStatus string
+
+const (
+	TiDBInited    TiDBStatus = "Inited"
+	TiDBRunning              = "Runing"
+	TiDBStoped               = "Stoped"
+	TiDBUpgrading            = "Upgrading"
+)
+
 type TiDBCluster struct {
 	ID          int64     `json:"id" xorm:"id"`
 	Name        string    `json:"name" xorm:"VARCHAR(200) UNIQUE NOT NULL"`
@@ -118,4 +127,13 @@ func isTiDBClusterExist(e Engine, uid int64, name string) (bool, error) {
 	return e.
 		Where("id!=?", uid).
 		Get(&TiDBCluster{Name: strings.ToLower(name)})
+}
+
+func UpdateTiDBCluster(tc *TiDBCluster) error {
+	return updateUser(x, tc)
+}
+
+func updateUser(e Engine, tc *TiDBCluster) error {
+	_, err := e.ID(tc.ID).Update(tc)
+	return err
 }

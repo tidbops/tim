@@ -3,8 +3,10 @@ package command
 import (
 	"fmt"
 	"os/exec"
+	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/tidbops/tim/pkg/models"
 )
 
 const (
@@ -59,6 +61,22 @@ func initCommandFunc(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	cmd.Printf("Init tidb-ansible files to path %s, version %s", initCmdFlags.Path, initCmdFlags.Version)
-}
+	tc := &models.TiDBCluster{
+		Name:        initCmdFlags.Name,
+		Version:     initCmdFlags.Version,
+		Path:        initCmdFlags.Path,
+		Description: initCmdFlags.Description,
+		InitTime:    time.Now(),
+		Status:      string(models.TiDBInited),
+	}
+	cli, err := genClient(cmd)
+	if err != nil {
+		cmd.Printf("init client failed, %v", err)
+		return
+	}
 
+	if err := cli.CreateTiDBCluster(tc); err != nil {
+		cmd.Printf("store tidb cluster information failed, %v", err)
+	}
+	cmd.Printf("Success! tidb-ansible files saved %s, version %s\n", initCmdFlags.Path, initCmdFlags.Version)
+}

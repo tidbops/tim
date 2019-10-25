@@ -1,24 +1,31 @@
-package server_client
+package local
 
 import "github.com/tidbops/tim/pkg/models"
 
 type Client struct{}
 
-func NewClient() *Client {
+func NewLocalClient() (*Client, error) {
+	c := &Client{}
+
+	if err := models.NewEngine(); err != nil {
+		return nil, err
+	}
+
+	return c, nil
 }
 
 func (c *Client) LoadTiDBClusters() ([]*models.TiDBCluster, error) {
-	return nil, nil
+	return models.LoadTiDBClusters()
 }
 
 func (c *Client) GetTiDBClusterByHost(host string) ([]*models.TiDBCluster, error) {
-	return nil, nil
+	return models.GetTiDBClusterByHost(host)
 }
 
 func (c *Client) GetTiDBClusterByName(name string) (*models.TiDBCluster, error) {
-	return nil, nil
+	return models.GetTiDBClusterByName(name)
 }
 
 func (c *Client) CreateTiDBCluster(tc *models.TiDBCluster) error {
-	return nil
+	return models.CreateTiDBCluster(tc)
 }

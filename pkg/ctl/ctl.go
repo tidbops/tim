@@ -33,8 +33,7 @@ func Start(args []string) {
 	rootCmd.SetArgs(args)
 	rootCmd.SilenceErrors = true
 	rootCmd.ParseFlags(args)
-	rootCmd.SetOut(os.Stdout)
-	rootCmd.SetErr(os.Stderr)
+	rootCmd.SetOutput(os.Stdout)
 
 	if err := rootCmd.Execute(); err != nil {
 		rootCmd.Println(err)

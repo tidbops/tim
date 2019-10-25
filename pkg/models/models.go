@@ -7,7 +7,7 @@ import (
 	"xorm.io/core"
 	"xorm.io/xorm"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // Engine represents a xorm engine or session.
@@ -56,8 +56,8 @@ func SetEngine() (err error) {
 
 	x.ShowExecTime(true)
 	x.SetMapper(core.GonicMapper{})
-	x.SetMaxOpenConns("32")
-	x.SetMaxIdleConns("8")
+	x.SetMaxOpenConns(32)
+	x.SetMaxIdleConns(8)
 	return nil
 }
 
@@ -67,9 +67,9 @@ func NewEngine() (err error) {
 		return err
 	}
 
-	if err = x.Ping(); err != nil {
-		return err
-	}
+	// if err = x.Ping(); err != nil {
+	// 	return err
+	// }
 
 	if err = x.StoreEngine("InnoDB").Sync2(tables...); err != nil {
 		return fmt.Errorf("sync database struct error: %v", err)
