@@ -1,0 +1,18 @@
+# new
+---
+pessimistic_txn:
+
+defaultcf:
+  titan:
+
+titan:
+
+storage:
+  block-cache:
+
+
+# delete
+---
+delete:
+  - "defaultcf"
+  - "defaultcf"

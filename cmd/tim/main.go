@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ngaut/log"
 	"io"
 	"io/ioutil"
 	"os"
@@ -18,6 +19,7 @@ import (
 
 var (
 	url      string
+	level    string
 	detach   bool
 	interact bool
 	version  bool
@@ -30,6 +32,12 @@ func init() {
 	flag.BoolVarP(&interact, "interact", "i", false, "Run tim with readline.")
 	flag.BoolVarP(&version, "version", "V", false, "Print version information and exit.")
 	flag.BoolVarP(&help, "help", "h", false, "Help message.")
+	flag.StringVarP(&level, "level", "L", "info",
+		"log level, support info / warning / debug / error / fatal")
+}
+
+func initLog() {
+	log.SetLevelByString(level)
 }
 
 func main() {
@@ -40,6 +48,8 @@ func main() {
 
 	flag.CommandLine.ParseErrorsWhitelist.UnknownFlags = true
 	flag.Parse()
+
+	initLog()
 
 	if help {
 		flag.Usage()

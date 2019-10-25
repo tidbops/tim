@@ -6,9 +6,21 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
-	"github.com/tidbops/tim/pkg/diff"
 	"github.com/tidbops/tim/pkg/models"
+	"github.com/tidbops/tim/pkg/utils"
+	"github.com/tidbops/tim/pkg/yaml"
+)
+
+const (
+	tikvRawConfigURL = "https://raw.githubusercontent.com/pingcap/tidb-ansible/%s/conf/tikv.yml"
+)
+
+const (
+	InputNew     = "Input a new config file"
+	UseOrigin    = "Use the origin config file"
+	UseRuleFiles = "Use the configuration rules file to generate a new configuration file?"
 )
 
 type UpgradeCommandFlags struct {
@@ -70,23 +82,68 @@ func upgradeCommandFunc(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	diffStr, err := diff.DiffYaml(oldTiKVConfig, targetTiKVConfig, true)
+	diffStr, err := yaml.Diff(oldTiKVConfig, targetTiKVConfig, true)
 	if err != nil {
 		cmd.Printf("compare %s %s failed, %v\n", oldTiKVConfig, targetTiKVConfig, err)
 		return
 	}
-	cmd.Println(diffStr)
+
+	if len(diffStr) > 0 {
+		cmd.Println("Default tikv config has changed!")
+		cmd.Println(diffStr)
+	}
+
+	prompt := promptui.Select{
+		Label: "Select to init Config",
+		Items: []string{
+			InputNew,
+			UseOrigin,
+			UseRuleFiles,
+		},
+	}
+
+	_, result, err := prompt.Run()
+	if err != nil {
+		cmd.Println(err)
+		return
+	}
+	// cmd.Println(result)
+
+	// var genConfig string
+
+	switch result {
+	case InputNew:
+	case UseOrigin:
+	case UseRuleFiles:
+	default:
+		cmd.Printf("%s is invalid\n", result)
+		return
+	}
 }
 
-const (
-	tikvRawConfigURL = "https://raw.githubusercontent.com/pingcap/tidb-ansible/%s/conf/tikv.yml"
-)
+func generateConfigByRuleFile(cmd cobra.Command) (string, error) {
+	validate := func(input string) error {
+		if exist := utils.FileExists(input); !exist {
+			return fmt.Errorf("file %s not exist", input)
+		}
+
+		return nil
+	}
+
+	prompt := promptui.Prompt{
+		Label:    "Rule File",
+		Validate: validate,
+	}
+
+	_, err := prompt.Run()
+	if err != nil {
+		return "", err
+	}
+
+	return "", nil
+}
 
 func prepareConfigFile(tc *models.TiDBCluster, targetVersion string, path string) (string, string, error) {
-	// cloneOldCmd := exec.Command("sh", "-c",
-	// fmt.Sprintf("git clone -b %s %s", tc.Version, TiDBAnsibleURL))
-
-	// tmpPath := fmt.Sprintf("/tmp/tim/%s/%d", tc.Name, id)
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		return "", "", err
 	}

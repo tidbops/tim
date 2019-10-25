@@ -1,4 +1,4 @@
-package diff
+package yaml
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func DiffYaml(file1, file2 string, color bool) (string, error) {
+func Diff(file1, file2 string, color bool) (string, error) {
 	formatter := newFormatter(color)
 
 	if err := stat(file1, file2); err != nil {
@@ -39,7 +39,7 @@ func stat(filenames ...string) error {
 		}
 		_, err := os.Stat(filename)
 		if err != nil {
-			return fmt.Errorf("cannot find file: %v. Does it exist?", filename)
+			return fmt.Errorf("cannot find file: %v", filename)
 		}
 	}
 	return nil
