@@ -29,3 +29,7 @@ func (c *Client) GetTiDBClusterByName(name string) (*models.TiDBCluster, error) 
 func (c *Client) CreateTiDBCluster(tc *models.TiDBCluster) error {
 	return models.CreateTiDBCluster(tc)
 }
+
+func (c *Client) UpdateTiDBCluster(tc *models.TiDBCluster) error {
+	return models.UpdateTiDBCluster(tc)
+}

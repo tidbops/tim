@@ -1,8 +1,6 @@
 package command
 
 import (
-	"fmt"
-	"os/exec"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -52,12 +50,8 @@ func initCommandFunc(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	gitCmd := exec.Command("sh", "-c",
-		fmt.Sprintf("git clone -b %s %s %s", initCmdFlags.Version, TiDBAnsibleURL, initCmdFlags.Path))
-
-	stdoutStderr, err := gitCmd.CombinedOutput()
-	if err != nil {
-		cmd.Println(string(stdoutStderr))
+	if err := initTiDBAnsible(initCmdFlags.Version, initCmdFlags.Path); err != nil {
+		cmd.Println(err)
 		return
 	}
 
@@ -71,12 +65,14 @@ func initCommandFunc(cmd *cobra.Command, args []string) {
 	}
 	cli, err := genClient(cmd)
 	if err != nil {
-		cmd.Printf("init client failed, %v", err)
+		cmd.Printf("init client failed, %v\n", err)
 		return
 	}
 
 	if err := cli.CreateTiDBCluster(tc); err != nil {
-		cmd.Printf("store tidb cluster information failed, %v", err)
+		cmd.Printf("store tidb cluster information failed, %v\n", err)
+		return
 	}
 	cmd.Printf("Success! tidb-ansible files saved %s, version %s\n", initCmdFlags.Path, initCmdFlags.Version)
 }
+

@@ -10,14 +10,15 @@ import (
 type TiDBStatus string
 
 const (
-	TiDBInited    TiDBStatus = "Inited"
-	TiDBRunning              = "Runing"
-	TiDBStoped               = "Stoped"
-	TiDBUpgrading            = "Upgrading"
+	TiDBInited         TiDBStatus = "Inited"
+	TiDBRunning                   = "Runing"
+	TiDBStoped                    = "Stoped"
+	TiDBUpgrading                 = "Upgrading"
+	TiDBWaitingUpgrade            = "WaitingUpgrade"
 )
 
 type TiDBCluster struct {
-	ID          int64     `json:"id" xorm:"id"`
+	ID          int64     `json:"id" xorm:"pk autoincr"`
 	Name        string    `json:"name" xorm:"VARCHAR(200) UNIQUE NOT NULL"`
 	Version     string    `json:"version" xorm:"VARCHAR(200)"`
 	Path        string    `json:"path" xorm:"VARCHAR(200)"`

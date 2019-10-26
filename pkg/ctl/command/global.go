@@ -1,9 +1,11 @@
 package command
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 
 	"github.com/spf13/cobra"
 	"github.com/tidbops/tim/pkg/client/local"
@@ -16,6 +18,7 @@ type Client interface {
 	GetTiDBClusterByHost(host string) ([]*models.TiDBCluster, error)
 	GetTiDBClusterByName(name string) (*models.TiDBCluster, error)
 	CreateTiDBCluster(tc *models.TiDBCluster) error
+	UpdateTiDBCluster(tc *models.TiDBCluster) error
 }
 
 func genClient(cmd *cobra.Command) (Client, error) {
@@ -58,6 +61,18 @@ func DownloadFile(url string, filepath string) error {
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func initTiDBAnsible(version string, path string) error {
+	gitCmd := exec.Command("sh", "-c",
+		fmt.Sprintf("git clone -b %s %s %s", version, TiDBAnsibleURL, path))
+
+	stdoutStderr, err := gitCmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("%s, %v", stdoutStderr, err)
 	}
 
 	return nil
