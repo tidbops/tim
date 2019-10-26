@@ -75,4 +75,3 @@ func initCommandFunc(cmd *cobra.Command, args []string) {
 	}
 	cmd.Printf("Success! tidb-ansible files saved %s, version %s\n", initCmdFlags.Path, initCmdFlags.Version)
 }
-

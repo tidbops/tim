@@ -23,7 +23,7 @@ const (
 )
 
 const (
-	InputNew     = "Input a new config file"
+	// InputNew     = "Input a new config file"
 	UseOrigin    = "Use the origin config file"
 	UseRuleFiles = "Use the configuration rules file to generate a new configuration file?"
 )
@@ -98,19 +98,38 @@ func upgradeCommandFunc(cmd *cobra.Command, args []string) {
 		cmd.Println(diffStr)
 	}
 
-	prompt := promptui.Select{
-		Label: "Select to init Config",
-		Items: []string{
-			InputNew,
-			UseOrigin,
-			UseRuleFiles,
-		},
+	var useInitRule bool
+	var ruleFile string
+
+	if upgradeCmdFlags.RuleFile != "" {
+		prompt := promptui.Prompt{
+			Label: fmt.Sprintf("Confirm to use %s rule file generate config files?",
+				upgradeCmdFlags.RuleFile),
+			IsConfirm: true,
+		}
+
+		_, err := prompt.Run()
+		if err == nil {
+			useInitRule = true
+			ruleFile = upgradeCmdFlags.RuleFile
+		}
 	}
 
-	_, result, err := prompt.Run()
-	if err != nil {
-		cmd.Println(err)
-		return
+	result := UseRuleFiles
+	if !useInitRule {
+		prompt := promptui.Select{
+			Label: "Select to init Config",
+			Items: []string{
+				UseOrigin,
+				UseRuleFiles,
+			},
+		}
+
+		_, result, err = prompt.Run()
+		if err != nil {
+			cmd.Println(err)
+			return
+		}
 	}
 
 	srcTiKVConfigFile := fmt.Sprintf("%s/conf/tikv.yml", tc.Path)
@@ -123,12 +142,18 @@ func upgradeCommandFunc(cmd *cobra.Command, args []string) {
 	var targetTiKVConfigFile string
 
 	switch result {
-	case InputNew:
 	case UseOrigin:
+		targetTiKVConfigFile = distTiKVConfigFile
 	case UseRuleFiles:
-		_, targetTiKVConfigFile, err = generateConfigByRuleFile(cmd, distTiKVConfigFile, tmpPath, "tikv")
+		_, targetTiKVConfigFile, err = generateConfigByRuleFile(
+			cmd, distTiKVConfigFile, tmpPath, "tikv", ruleFile)
 	default:
 		cmd.Printf("%s is invalid\n", result)
+		return
+	}
+
+	if err != nil {
+		cmd.Println(err)
 		return
 	}
 
@@ -199,6 +224,7 @@ func generateConfigByRuleFile(
 	configFile string,
 	path string,
 	prefix string,
+	ruleFile string,
 ) (string, string, error) {
 	validate := func(input string) error {
 		if exist := utils.FileExists(input); !exist {
@@ -208,18 +234,38 @@ func generateConfigByRuleFile(
 		return nil
 	}
 
-	prompt := promptui.Prompt{
-		Label:    "Rule File",
-		Validate: validate,
+	if ruleFile == "" {
+		prompt := promptui.Prompt{
+			Label:    "Rule File",
+			Validate: validate,
+		}
+
+		result, err := prompt.Run()
+		if err != nil {
+			return "", "", fmt.Errorf("exit")
+		}
+		ruleFile = result
 	}
 
-	result, err := prompt.Run()
+	rules, err := ioutil.ReadFile(ruleFile)
+	if err != nil {
+		return "", "", err
+	}
+
+	cmd.Println(string(rules))
+
+	prompC := promptui.Prompt{
+		Label:     "Confirm whether to generate a configuration file using the above rules?",
+		IsConfirm: true,
+	}
+
+	_, err = prompC.Run()
 	if err != nil {
 		return "", "", err
 	}
 
 	p := parser.NewParser()
-	newRuleFile, deleteRuleFile, err := p.ParserFile(result, path, prefix)
+	newRuleFile, deleteRuleFile, err := p.ParserFile(ruleFile, path, prefix)
 	if err != nil {
 		return "", "", err
 	}
