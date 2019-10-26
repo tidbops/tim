@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -194,10 +195,34 @@ func upgradeCommandFunc(cmd *cobra.Command, args []string) {
 	}
 
 	cmd.Printf("Success! Init %s tidb-ansible files saved to %s\n", upgradeCmdFlags.TargetVersion, tc.Path)
-	cmd.Println("You can execute the following commands to upgrade!!")
-	cmd.Printf("cd %s\n", tc.Path)
-	cmd.Println("ansible-playbook local_prepare.yml")
-	cmd.Println("ansible-playbook excessive_rolling_update.yml")
+
+	promptCon := promptui.Prompt{
+		Label:     "Do you want to continue the upgrade?",
+		IsConfirm: true,
+	}
+	_, err = promptCon.Run()
+	if err != nil {
+		return
+	}
+
+	cmd.Println("Start to prepare binary...")
+	localPreS := fmt.Sprintf("cd %s; ansible-playbook local_prepare.yml", tc.Path)
+	pCmd := exec.Command("sh", "-c", localPreS)
+	pStdoutErr, err := pCmd.CombinedOutput()
+	if err != nil {
+		cmd.Println(pStdoutErr)
+		return
+	}
+
+	cmd.Println("Start to rolling update...")
+	rS := fmt.Sprintf("cd %s; ansible-playbook excessive_rolling_update.yml", tc.Path)
+	rollingCmd := exec.Command("sh", "-c", rS)
+	rStdoutErr, err := rollingCmd.CombinedOutput()
+	if err != nil {
+		cmd.Println(rStdoutErr)
+		return
+	}
+	cmd.Println("Success!!!")
 }
 
 func copyConfigs(src, dist string, version, target string) error {

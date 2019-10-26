@@ -11,14 +11,14 @@ var _Assetsed8b0b21cd2e2f201192750e67c051b1e773a13c = ""
 
 // Assets returns go-assets FileSystem
 var Assets = assets.NewFileSystem(map[string][]string{}, map[string]*assets.File{
-	"index.tmpl": &assets.File{
+	"assets.go": &assets.File{
+		Path:     "assets.go",
+		FileMode: 0x1a4,
+		Mtime:    time.Unix(1572116524, 1572116524905645147),
+		Data:     []byte(_Assetsed8b0b21cd2e2f201192750e67c051b1e773a13c),
+	}, "index.tmpl": &assets.File{
 		Path:     "index.tmpl",
 		FileMode: 0x1a4,
 		Mtime:    time.Unix(1572116511, 1572116511617733083),
 		Data:     []byte(_Assets63ee2efd8d8466106078b867dca773cca0c49385),
-	}, "assets.go": &assets.File{
-		Path:     "assets.go",
-		FileMode: 0x1a4,
-		Mtime:    time.Unix(1572116511, 1572116511622559522),
-		Data:     []byte(_Assetsed8b0b21cd2e2f201192750e67c051b1e773a13c),
 	}}, "")
