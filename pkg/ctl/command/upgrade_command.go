@@ -77,7 +77,7 @@ func upgradeCommandFunc(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	if tc.Host != getHostName() {
+	if tc.Host != strings.ToLower(getHostName()) {
 		cmd.Printf("%s tidb-ansible files not on this node, you should login to %s to operate tidb cluster\n",
 			tc.Name, tc.Host)
 		return
