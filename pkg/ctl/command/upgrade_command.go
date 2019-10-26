@@ -212,6 +212,12 @@ func copyConfigs(src, dist string, version, target string) error {
 		return err
 	}
 
+	srcHost := fmt.Sprintf("%s/hosts.ini", src)
+	distHost := fmt.Sprintf("%s/hosts.ini", dist)
+	if err := utils.CopyFile(srcHost, distHost); err != nil {
+		return err
+	}
+
 	srcConf := fmt.Sprintf("%s/conf", src)
 	distConf := fmt.Sprintf("%s/conf", dist)
 

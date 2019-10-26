@@ -31,7 +31,9 @@ func envCommandFunc(cmd *cobra.Command, args []string) {
 	shCmd := exec.Command("sh", initScitpFile)
 	stdoutStderr, err := shCmd.CombinedOutput()
 	if err != nil {
-		cmd.Println(stdoutStderr)
+		cmd.Println(string(stdoutStderr))
 		return
 	}
+
+	cmd.Println("Success!")
 }

@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	TiDBAnsibleURL = "https://github.com/pingcap/tidb-ansible.git"
+	TiDBAnsibleURL = "https://github.com/tidbops/tidb-ansible.git"
 )
 
 type InitCommandFlags struct {
