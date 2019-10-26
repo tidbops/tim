@@ -61,6 +61,7 @@ func initCommandFunc(cmd *cobra.Command, args []string) {
 		Path:        initCmdFlags.Path,
 		Description: initCmdFlags.Description,
 		InitTime:    time.Now(),
+		Host:        getHostName(),
 		Status:      string(models.TiDBInited),
 	}
 	cli, err := genClient(cmd)

@@ -77,3 +77,8 @@ func initTiDBAnsible(version string, path string) error {
 
 	return nil
 }
+
+func getHostName() string {
+	hostname, _ := os.Hostname()
+	return hostname
+}
