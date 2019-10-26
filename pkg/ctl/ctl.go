@@ -31,6 +31,8 @@ func Start(args []string) {
 	rootCmd.AddCommand(
 		command.NewInitCommand(),
 		command.NewUpgradeCommand(),
+		command.NewListCommand(),
+		command.NewSearchCommand(),
 	)
 
 	rootCmd.SetArgs(args)

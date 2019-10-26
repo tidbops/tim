@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/bndr/gotabulate"
 	"github.com/spf13/cobra"
 	"github.com/tidbops/tim/pkg/client/local"
 	"github.com/tidbops/tim/pkg/client/server"
@@ -19,6 +20,7 @@ type Client interface {
 	GetTiDBClusterByName(name string) (*models.TiDBCluster, error)
 	CreateTiDBCluster(tc *models.TiDBCluster) error
 	UpdateTiDBCluster(tc *models.TiDBCluster) error
+	SearchTiDBCluster(s map[string]interface{}) ([]*models.TiDBCluster, error)
 }
 
 func genClient(cmd *cobra.Command) (Client, error) {
@@ -81,4 +83,15 @@ func initTiDBAnsible(version string, path string) error {
 func getHostName() string {
 	hostname, _ := os.Hostname()
 	return hostname
+}
+
+func GetTiDBClustersTableString(tc []*models.TiDBCluster) string {
+	var tcArr [][]string
+	for _, t := range tc {
+		tcArr = append(tcArr, []string{string(t.ID), t.Name, t.Version, t.Path, t.Host, t.Status, t.Description, t.InitTime.Format("2006-01-02 15:04:05")})
+	}
+	t := gotabulate.Create(tcArr)
+	t.SetHeaders([]string{"ID", "Name", "Version", "Path", "Host", "Status", "Description", "InitTime"})
+	t.SetAlign("right")
+	return t.Render("grid")
 }

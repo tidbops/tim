@@ -17,6 +17,21 @@ const (
 	TiDBWaitingUpgrade            = "WaitingUpgrade"
 )
 
+func JudgeTiDBStatusType(this string) (TiDBStatus, error) {
+	switch this {
+	case "Inited":
+		return TiDBRunning, nil
+	case "Runing":
+		return TiDBRunning, nil
+	case "Stoped":
+		return TiDBStoped, nil
+	case "Upgrading":
+		return TiDBUpgrading, nil
+	default:
+		return "", fmt.Errorf("Unknow TiDBStatus")
+	}
+}
+
 type TiDBCluster struct {
 	ID          int64     `json:"id" xorm:"pk autoincr"`
 	Name        string    `json:"name" xorm:"VARCHAR(200) UNIQUE NOT NULL"`
@@ -137,4 +152,21 @@ func UpdateTiDBCluster(tc *TiDBCluster) error {
 func updateUser(e Engine, tc *TiDBCluster) error {
 	_, err := e.ID(tc.ID).Update(tc)
 	return err
+}
+
+func SearchTiDBClusters(s map[string]interface{}) ([]*TiDBCluster, error) {
+	tcs := make([]*TiDBCluster, 0, 10)
+	where := map[string]interface{}{}
+	for k, v := range s {
+		if v != "" {
+			where[k] = v
+		}
+	}
+	if err := x.
+		Where(where).
+		OrderBy("init_time").
+		Find(&tcs); err != nil {
+		return nil, err
+	}
+	return tcs, nil
 }

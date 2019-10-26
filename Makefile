@@ -28,4 +28,6 @@ tim:
 	$(CGO) -ldflags '$(LDFLAGS)' -o bin/tim cmd/tim/*.go
 
 tim-server:
+	GO111MODULE=off go get github.com/jessevdk/go-assets-builder
+	go-assets-builder pkg/server/dashboard/templates -o pkg/server/dashboard/templates/assets.go -s /pkg/server/dashboard/templates/  -p templates
 	$(CGO) -ldflags '$(LDFLAGS)' -o bin/tim-server cmd/tim-server/*.go
