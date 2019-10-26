@@ -57,11 +57,13 @@ func CreateTiDBCluster(c *gin.Context) {
 	path := c.PostForm("path")
 	host := c.PostForm("host")
 	status := c.PostForm("status")
+	dateTime := c.DefaultPostForm("time", time.Now().Format("2006-01-02 15:04:05"))
 	if _, err := models.JudgeTiDBStatusType(status); err != nil {
 		c.JSON(http.StatusOK, gin.H{"code": 10, "msg": fmt.Sprintf("TiDBStatus invaild, %v", status)})
 		return
 	}
 	desc := c.PostForm("description")
+	t, _ := time.Parse("2006-01-02 15:04:05", dateTime)
 	tc := &models.TiDBCluster{
 		Name:        name,
 		Version:     version,
@@ -69,7 +71,7 @@ func CreateTiDBCluster(c *gin.Context) {
 		Host:        host,
 		Status:      status,
 		Description: desc,
-		InitTime:    time.Time{},
+		InitTime:    t,
 	}
 	if err := models.CreateTiDBCluster(tc); err != nil {
 		c.JSON(http.StatusOK, gin.H{"code": 10, "msg": fmt.Sprintf("store tidb cluster information failed, %v", err)})
