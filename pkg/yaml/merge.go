@@ -78,13 +78,12 @@ func readAndUpdate(reader io.Reader, updateData updateDataFn) (string, error) {
 	writer := bufio.NewWriter(buf)
 	encoder := yaml.NewEncoder(writer)
 
-	// if err := readStream(inputFile, mapYamlDecoder(updateData, encoder)); err != nil {
-	// 	return "", err
-	// }
-	// yamlDecoder(yaml.NewDecoder(stream))
-
 	yamDecoder := mapYamlDecoder(updateData, encoder)
 	if err := yamDecoder(yaml.NewDecoder(reader)); err != nil {
+		return "", err
+	}
+
+	if err := writer.Flush(); err != nil {
 		return "", err
 	}
 

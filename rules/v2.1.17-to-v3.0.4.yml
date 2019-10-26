@@ -2,18 +2,17 @@
 ---
 pessimistic_txn:
 
-defaultcf:
+rocksdb:
   titan:
-
-titan:
+  defaultcf:
+    titan:
 
 storage:
   block-cache:
 
-
 # @delete
 ---
 delete:
-  - "defaultcf"
-  - "defaultcf"
+  - "storage"
+  - "rocksdb"
 

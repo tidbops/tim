@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/ngaut/log"
 	"io"
 	"io/ioutil"
 	"os"
@@ -11,7 +10,8 @@ import (
 	"syscall"
 
 	"github.com/chzyer/readline"
-	shellwords "github.com/mattn/go-shellwords"
+	"github.com/mattn/go-shellwords"
+	"github.com/ngaut/log"
 	flag "github.com/spf13/pflag"
 	"github.com/tidbops/tim/pkg/ctl"
 	v "github.com/tidbops/tim/pkg/version"

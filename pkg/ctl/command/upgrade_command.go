@@ -5,9 +5,11 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/manifoldco/promptui"
+	"github.com/ngaut/log"
 	"github.com/spf13/cobra"
 	"github.com/tidbops/tim/pkg/models"
 	"github.com/tidbops/tim/pkg/parser"
@@ -141,7 +143,7 @@ func upgradeCommandFunc(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	if err := copyConfigs(bakDir, tc.Path); err != nil {
+	if err := copyConfigs(bakDir, tc.Path, tc.Version, upgradeCmdFlags.TargetVersion); err != nil {
 		cmd.Println(err)
 		return
 	}
@@ -151,6 +153,7 @@ func upgradeCommandFunc(cmd *cobra.Command, args []string) {
 		cmd.Println(err)
 		return
 	}
+
 	tc.Version = upgradeCmdFlags.TargetVersion
 	tc.Status = models.TiDBWaitingUpgrade
 	if err := cli.UpdateTiDBCluster(tc); err != nil {
@@ -158,14 +161,14 @@ func upgradeCommandFunc(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	cmd.Println("Success! Init %s tidb-ansible files saved to %s", upgradeCmdFlags.TargetVersion, tc.Path)
+	cmd.Printf("Success! Init %s tidb-ansible files saved to %s\n", upgradeCmdFlags.TargetVersion, tc.Path)
 	cmd.Println("You can execute the following commands to upgrade!!")
 	cmd.Printf("cd %s\n", tc.Path)
 	cmd.Println("ansible-playbook local_prepare.yml")
 	cmd.Println("ansible-playbook excessive_rolling_update.yml")
 }
 
-func copyConfigs(src, dist string) error {
+func copyConfigs(src, dist string, version, target string) error {
 	srcInv := fmt.Sprintf("%s/inventory.ini", src)
 	distInv := fmt.Sprintf("%s/inventory.ini", dist)
 
@@ -173,8 +176,17 @@ func copyConfigs(src, dist string) error {
 		return err
 	}
 
+	if err := utils.ReplaceStrInFile(distInv, version, target); err != nil {
+		return err
+	}
+
 	srcConf := fmt.Sprintf("%s/conf", src)
 	distConf := fmt.Sprintf("%s/conf", dist)
+
+	if err := os.Rename(distConf, distConf+"bak"); err != nil {
+		return err
+	}
+
 	if err := utils.CopyDir(srcConf, distConf); err != nil {
 		return err
 	}
@@ -223,14 +235,20 @@ func generateConfigByRuleFile(
 		return "", "", err
 	}
 
+	log.Debugf("Delete rule %s", deleteRules.Delete)
+
 	output, err := tyaml.DeleteMulti(configFile, deleteRules.Delete)
 	if err != nil {
 		return "", "", err
 	}
 
-	waitingForMergeFile := fmt.Sprintf("%s-%s-waiting-merge.yml", path, prefix)
+	log.Debugf("after delete action, output len %d", len(output))
 
-	if err := utils.WriteToFile(output, waitingForMergeFile); err != nil {
+	waitingForMergeFile := fmt.Sprintf("%s/%s-waiting-merge.yml", path, prefix)
+
+	log.Debugf("after delete action config file: %s", waitingForMergeFile)
+
+	if err := utils.WriteToFile(strings.Replace(output, "null", "", -1), waitingForMergeFile); err != nil {
 		return "", "", err
 	}
 
@@ -239,8 +257,13 @@ func generateConfigByRuleFile(
 		return "", "", err
 	}
 
+	log.Debugf("after merge action, output len %d", len(output))
+
 	targetConfigFile := fmt.Sprintf("%s/%s-target-config.yml", path, prefix)
-	if err := utils.WriteToFile(output, targetConfigFile); err != nil {
+
+	log.Debugf("merge config file: %s", targetConfigFile)
+
+	if err := utils.WriteToFile(strings.Replace(output, "null", "", -1), targetConfigFile); err != nil {
 		return "", "", err
 	}
 

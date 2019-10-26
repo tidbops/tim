@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func FileExists(name string) bool {
@@ -99,7 +100,7 @@ func CopyDir(src string, dst string) (err error) {
 		return
 	}
 	if err == nil {
-		return fmt.Errorf("destination already exists")
+		return fmt.Errorf("%s destination already exists", dst)
 	}
 
 	err = os.MkdirAll(dst, si.Mode())
@@ -135,4 +136,19 @@ func CopyDir(src string, dst string) (err error) {
 	}
 
 	return
+}
+
+func ReplaceStrInFile(file string, old, new string) error {
+	input, err := ioutil.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	output := strings.Replace(string(input), old, new, -1)
+	err = ioutil.WriteFile(file, []byte(output), 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

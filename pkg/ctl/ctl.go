@@ -1,7 +1,9 @@
 package ctl
 
 import (
+	"gopkg.in/mikefarah/yaml.v2"
 	"os"
+	"reflect"
 
 	"github.com/spf13/cobra"
 	"github.com/tidbops/tim/pkg/ctl/command"
@@ -13,6 +15,7 @@ var (
 
 func init() {
 	cobra.EnablePrefixMatching = true
+	yaml.DefaultMapType = reflect.TypeOf(yaml.MapSlice{})
 }
 
 func Start(args []string) {

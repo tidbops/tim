@@ -17,6 +17,8 @@ import (
 func Delete(input string, deletePath string) (string, error) {
 	var stream io.Reader
 
+	log.Debugf("input file: %s", input)
+
 	if input == "-" {
 		stream = bufio.NewReader(os.Stdin)
 	} else {
@@ -38,10 +40,15 @@ func delete(stream io.Reader, deletePath string) (string, error) {
 		paths       = parsePath(deletePath)
 	)
 
+	log.Debugf("paths %s", paths)
+
 	var updateData = func(dataBucket interface{}, currentIndex int) (interface{}, error) {
+		log.Debugf("currentIndex %d, docIndexInt %d", currentIndex, docIndexInt)
+
 		if currentIndex == docIndexInt {
 			return deleteChildValue(dataBucket, paths)
 		}
+
 		return dataBucket, nil
 	}
 
@@ -55,7 +62,11 @@ func DeleteMulti(input string, deletePaths []string) (string, error) {
 		stream io.Reader
 	)
 
+	log.Debugf("input file: %s", input)
+
 	for index, path := range deletePaths {
+		log.Debugf("delete path %s", path)
+
 		if index == 0 {
 			if input == "-" {
 				stream = bufio.NewReader(os.Stdin)
@@ -68,18 +79,22 @@ func DeleteMulti(input string, deletePaths []string) (string, error) {
 
 				stream = file
 			}
+
 			output, err = delete(stream, path)
 			if err != nil {
 				return "", err
 			}
+			log.Debugf("output len %d", len(output))
 			continue
 		}
 
-		stream = bufio.NewReader(strings.NewReader(output))
+		stream = strings.NewReader(output)
+
 		output, err = delete(stream, path)
 		if err != nil {
 			return "", err
 		}
+		log.Debugf("output len %d", len(output))
 	}
 
 	return output, nil
@@ -414,13 +429,16 @@ func deleteArray(array []interface{}, paths []string, index int64) (interface{},
 }
 
 func deleteChildValue(child interface{}, remainingPaths []string) (interface{}, error) {
+	log.Debugf("deleteChildValue for %v for %v\n", remainingPaths, child)
 	head := remainingPaths[0]
 	tail := remainingPaths[1:]
 
 	switch child := child.(type) {
 	case yaml.MapSlice:
+		log.Debugf("delete map paths %v", remainingPaths)
 		return deleteMap(child, remainingPaths)
 	case []interface{}:
+		log.Debugf("delete from []interface{}", remainingPaths)
 		if head == "*" {
 			return deleteArraySplat(child, tail)
 		}
