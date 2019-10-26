@@ -23,7 +23,7 @@ func Router(r *gin.Engine) {
 	r.GET("api/gettidbclustersbyhost", api.GetTiDBClustersByHost)
 	r.GET("api/searchtidbclusters", api.SearchTiDBClusters)
 
-	r.GET("dashboard/index", web.Index)
+	r.GET("index", web.Index)
 }
 
 func loadTemplate() (*template.Template, error) {

@@ -5,78 +5,181 @@
   <!-- import CSS -->
   <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
   <style type="text/css">
-      .el-table .warning-row {
-          background: oldlace;
-        }
-      .el-table .success-row {
-         background: #f0f9eb;
-      }
+    .el-table .warning-row {
+      background: oldlace;
+    }
+    .el-table .success-row {
+      background: #f0f9eb;
+    }
+    #app {
+      margin-top: 5%;
+    }
   </style>
 </head>
 <body>
-  <div id="app">
-  <template>
+<div id="app">
+  <el-container>
+    <el-header>
+      <el-row :gutter="20">
+        <el-col :span="3"><el-input v-model="name" placeholder="Name"></el-input></el-col>
+        <el-col :span="3"><el-input v-model="version" placeholder="Version"></el-input></el-col>
+        <el-col :span="4"><el-input v-model="host" placeholder="Host"></el-input></el-col>
+        <el-col :span="7"><el-input v-model="path" placeholder="Path"></el-input></el-col>
+        <el-col :span="3"><el-select v-model="status" placeholder="Please Select">
+          <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+          </el-option>
+        </el-select>
+        </el-col>
+        <el-col :span="4"><el-button type="primary" icon="el-icon-search" v-on:click="search">搜索</el-button></el-col>
+      </el-row>
+    </el-header>
+    <el-main>
     <el-table
-      :data="tableData"
-      style="width: 100%"
-      :row-class-name="tableRowClassName">
+            :data="tableData"
+            style="width: 100%"
+            :row-class-name="tableRowClassName">
       <el-table-column
-        prop="date"
-        label="日期"
-        width="180">
+              prop="id"
+              label="ID"
+              width="180">
       </el-table-column>
       <el-table-column
-        prop="name"
-        label="姓名"
-        width="180">
+              prop="name"
+              label="name"
+              width="180">
       </el-table-column>
       <el-table-column
-        prop="address"
-        label="地址">
+              prop="version"
+              label="Version">
+      </el-table-column>
+      <el-table-column
+              prop="path"
+              label="Path">
+      </el-table-column>
+      <el-table-column
+              prop="host"
+              label="Host">
+      </el-table-column>
+      <el-table-column
+              prop="status"
+              label="Status">
+      </el-table-column>
+      <el-table-column
+              prop="description"
+              label="Description">
+      </el-table-column>
+      <el-table-column
+              prop="initTime"
+              label="InitTime">
       </el-table-column>
     </el-table>
-  </template>
-  </div>
+    <el-main>
+  </el-container>
+</div>
 </body>
-  <!-- import Vue before Element -->
-  <script src="https://unpkg.com/vue/dist/vue.js"></script>
-  <!-- import JavaScript -->
-  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-  <script>
-    var Main = {
-        methods: {
-          tableRowClassName({row, rowIndex}) {
-            if (rowIndex === 1) {
-              return 'warning-row';
-            } else if (rowIndex === 3) {
-              return 'success-row';
-            }
-            return '';
-          }
-        },
-        data() {
-          return {
-            tableData: [{
-              date: '2016-05-02',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1518 弄',
-            }, {
-              date: '2016-05-04',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-              date: '2016-05-01',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1518 弄',
-            }, {
-              date: '2016-05-03',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1518 弄'
-            }]
-          }
-        }
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+  const router = new VueRouter({
+    routes: []
+  })
+  var Main = {
+    el: '#app',
+    data: {
+        name: "",
+        version: "",
+        host: "",
+        path: "",
+        status: "",
+        tableData: [],
+        options: [{
+          value: '',
+          label: 'Please Select'
+        }, {
+          value: 'Inited',
+          label: 'Inited'
+        }, {
+          value: 'Runing',
+          label: 'Runing'
+        }, {
+          value: 'Stoped',
+          label: 'Stoped'
+        }, {
+          value: 'Upgrading',
+          label: 'Upgrading'
+        },{
+          value: 'WaitingUpgrade',
+          label: 'WaitingUpgrade'
+        }],
+    },
+    created: function(){
+      query = this.$route.query
+      if (query.hasOwnProperty("name")) {
+        this.name = query.name
       }
-    var Ctor = Vue.extend(Main)
-    new Ctor().$mount('#app')
-  </script>
+      if (query.hasOwnProperty("version")) {
+        this.version = query.version
+      }
+      if (query.hasOwnProperty("path")) {
+        this.path = query.path
+      }
+      if (query.hasOwnProperty("host")) {
+        this.host = query.host
+      }
+      if (query.hasOwnProperty("status")) {
+        this.status = query.status
+      }
+      this.convert(this.$route.fullPath)
+    },
+    methods: {
+      convert: function (params) {
+        axios
+                .get('api/searchtidbclusters' + params)
+                .then(response => {
+                  this.tableData = response.data.data
+                })
+      },
+      tableRowClassName({row, rowIndex}) {
+        if (rowIndex === 1) {
+          return 'warning-row';
+        } else if (rowIndex === 3) {
+          return 'success-row';
+        }
+        return '';
+      },
+      search: function () {
+        params = {}
+        if (this.name != "") {
+          params.name = this.name
+        }
+        if (this.version != "") {
+          params.version = this.version
+        }
+        if (this.path != "") {
+          params.path = this.path
+        }
+        if (this.host != "") {
+          params.host = this.host
+        }
+        if (this.status != "") {
+          params.status = this.status
+        }
+        this.$router.push({
+          query: params
+        })
+        this.convert(this.$route.fullPath);
+      },
+    },
+    router
+  }
+  var Ctor = new Vue(Main)
+</script>
 </html>

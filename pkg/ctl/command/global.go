@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 
 	"github.com/bndr/gotabulate"
 	"github.com/spf13/cobra"
@@ -59,7 +60,7 @@ func getHostName() string {
 func GetTiDBClustersTableString(tc []*models.TiDBCluster) string {
 	var tcArr [][]string
 	for _, t := range tc {
-		tcArr = append(tcArr, []string{string(t.ID), t.Name, t.Version, t.Path, t.Host, t.Status, t.Description, t.InitTime.Format("2006-01-02 15:04:05")})
+		tcArr = append(tcArr, []string{strconv.FormatInt(t.ID, 10), t.Name, t.Version, t.Path, t.Host, t.Status, t.Description, t.InitTime.Format("2006-01-02 15:04:05")})
 	}
 	t := gotabulate.Create(tcArr)
 	t.SetHeaders([]string{"ID", "Name", "Version", "Path", "Host", "Status", "Description", "InitTime"})
