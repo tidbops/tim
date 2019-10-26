@@ -33,6 +33,7 @@ func Start(args []string) {
 		command.NewUpgradeCommand(),
 		command.NewListCommand(),
 		command.NewSearchCommand(),
+		command.NewEnvCommand(),
 	)
 
 	rootCmd.SetArgs(args)

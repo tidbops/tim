@@ -2,8 +2,6 @@ package command
 
 import (
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"os/exec"
 
@@ -39,33 +37,6 @@ func genClient(cmd *cobra.Command) (Client, error) {
 	}
 
 	return c, nil
-}
-
-// DownloadFile will download a url and store it in local filepath.
-// It writes to the destination file as it downloads it, without
-// loading the entire file into memory.
-func DownloadFile(url string, filepath string) error {
-	// Create the file
-	out, err := os.Create(filepath)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	// Get the data
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func initTiDBAnsible(version string, path string) error {

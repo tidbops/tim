@@ -44,7 +44,8 @@ func NewUpgradeCommand() *cobra.Command {
 		Run:   upgradeCommandFunc,
 	}
 
-	upgradeCmd.Flags().StringVar(&upgradeCmdFlags.TargetVersion, "target-version", "", "the version that ready to upgrade to")
+	upgradeCmd.Flags().StringVar(&upgradeCmdFlags.TargetVersion,
+		"target-version", "", "the version that ready to upgrade to")
 	upgradeCmd.Flags().StringVar(&upgradeCmdFlags.RuleFile, "rule-file", "",
 		"rule files for different version of configuration conversion")
 
@@ -333,13 +334,13 @@ func prepareConfigFile(tc *models.TiDBCluster, targetVersion string, path string
 
 	oldRawTiKVConfigURL := fmt.Sprintf(tikvRawConfigURL, tc.Version)
 	oldTiKVConfigPath := filepath.Join(path, fmt.Sprintf("%s-tikv.yml", tc.Version))
-	if err := DownloadFile(oldRawTiKVConfigURL, oldTiKVConfigPath); err != nil {
+	if err := utils.DownloadFile(oldRawTiKVConfigURL, oldTiKVConfigPath); err != nil {
 		return "", "", err
 	}
 
 	targetRawTiKVConfigURL := fmt.Sprintf(tikvRawConfigURL, targetVersion)
 	targetTiKVConfigPath := filepath.Join(path, fmt.Sprintf("%s-tikv.yml", targetVersion))
-	if err := DownloadFile(targetRawTiKVConfigURL, targetTiKVConfigPath); err != nil {
+	if err := utils.DownloadFile(targetRawTiKVConfigURL, targetTiKVConfigPath); err != nil {
 		return "", "", err
 	}
 

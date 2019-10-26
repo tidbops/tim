@@ -5,7 +5,6 @@ go 1.12
 require (
 	github.com/bndr/gotabulate v1.1.2
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
-	github.com/eapache/go-resiliency v1.1.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/imdario/mergo v0.3.8
 	github.com/jessevdk/go-assets v0.0.0-20160921144138-4f4301a06e15
