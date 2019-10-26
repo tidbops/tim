@@ -21,7 +21,7 @@ yum_install python2-pip
 requiredURL="https://raw.githubusercontent.com/pingcap/tidb-ansible/master/requirements.txt"
 
 wget -O /tmp/requirements.txt  $requiredURL
-pip install -r /tmp/requirements.txt
+sudo pip install -r /tmp/requirements.txt
 set +e
 
 echo "Success!!"
