@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 function yum_install() {
-    yumcmd="yum install -y"
+    yumcmd="sudo yum install -y"
     for var in "$@"
     do
         if ! rpm --quiet --query $var; then
@@ -9,7 +9,7 @@ function yum_install() {
         fi
     done
     echo $yumcmd
-    if [ $yumcmd != "yum install -y" ]; then
+    if [[ "$yumcmd" != "sudo yum install -y" ]]; then
         eval $yumcmd
     fi
 }
