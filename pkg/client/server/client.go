@@ -70,6 +70,20 @@ func (c *Client) CreateTiDBCluster(tc *models.TiDBCluster) error {
 }
 
 func (c *Client) UpdateTiDBCluster(tc *models.TiDBCluster) error {
+	params := map[string]interface{}{
+		"id":          tc.ID,
+		"name":        tc.Name,
+		"version":     tc.Version,
+		"path":        tc.Path,
+		"host":        tc.Host,
+		"status":      tc.Status,
+		"description": tc.Description,
+		"initTime":    tc.InitTime.Format("2006-01-02 15:04:05"),
+	}
+	_, err := postRpcCall("/api/updatetidbcluster", params)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
