@@ -77,7 +77,7 @@ func CreateTiDBCluster(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"code": 10, "msg": fmt.Sprintf("store tidb cluster information failed, %v", err)})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success", "data": tc})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success", "data": []*models.TiDBCluster{tc}})
 }
 
 func SearchTiDBClusters(c *gin.Context) {

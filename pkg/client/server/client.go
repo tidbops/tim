@@ -60,7 +60,7 @@ func (c *Client) CreateTiDBCluster(tc *models.TiDBCluster) error {
 		"host":        tc.Host,
 		"status":      tc.Status,
 		"description": tc.Description,
-		"initTime":    tc.InitTime,
+		//"initTime":    tc.InitTime,
 	}
 	_, err := postRpcCall("/api/createtidbcluster", params)
 	if err != nil {
