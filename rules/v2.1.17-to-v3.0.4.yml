@@ -1,7 +1,6 @@
 # @new
 ---
-pessimistic_txn:
-  enable: false
+pessimistic-txn:
 
 rocksdb:
   titan:

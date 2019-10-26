@@ -6,10 +6,7 @@ require (
 	github.com/bndr/gotabulate v1.1.2
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/gin-gonic/gin v1.4.0
-	github.com/imdario/mergo v0.3.8
 	github.com/jessevdk/go-assets v0.0.0-20160921144138-4f4301a06e15
-	github.com/jessevdk/go-assets-builder v0.0.0-20130903091706-b8483521738f // indirect
-	github.com/jessevdk/go-flags v1.4.0 // indirect
 	github.com/kylelemons/godebug v1.1.0
 	github.com/logrusorgru/aurora v0.0.0-20191017060258-dc85c304c434
 	github.com/manifoldco/promptui v0.3.2
@@ -19,6 +16,7 @@ require (
 	github.com/ngaut/log v0.0.0-20180314031856-b8e36e7ba5ac
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.3
+	github.com/tidbops/mergo v0.3.9-0.20191026204819-85b7c6436930
 	github.com/ugorji/go v1.1.7 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect

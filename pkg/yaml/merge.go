@@ -9,8 +9,8 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/imdario/mergo"
 	"github.com/ngaut/log"
+	"github.com/tidbops/mergo"
 	yaml "gopkg.in/mikefarah/yaml.v2"
 )
 
