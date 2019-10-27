@@ -73,7 +73,8 @@
               label="Description">
       </el-table-column>
       <el-table-column
-              prop="initTime"
+              prop="init_time"
+              :formatter="formatTime"
               label="InitTime">
       </el-table-column>
     </el-table>
@@ -176,6 +177,15 @@
           query: params
         })
         this.convert(this.$route.fullPath);
+      },
+      formatTime(row, column){
+        const date = new Date(row[column.property])
+        return date.getFullYear() + '-' +
+                date.getMonth() + '-' +
+                date.getDate() + ' ' +
+                date.getHours() + ':' +
+                date.getMinutes() + ':' +
+                date.getSeconds()
       },
     },
     router
