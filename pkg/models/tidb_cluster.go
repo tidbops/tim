@@ -11,7 +11,7 @@ type TiDBStatus string
 
 const (
 	TiDBInited         TiDBStatus = "Inited"
-	TiDBRunning                   = "Runing"
+	TiDBRunning                   = "Running"
 	TiDBStoped                    = "Stoped"
 	TiDBUpgrading                 = "Upgrading"
 	TiDBWaitingUpgrade            = "WaitingUpgrade"
@@ -21,7 +21,7 @@ func JudgeTiDBStatusType(this string) (TiDBStatus, error) {
 	switch this {
 	case "Inited":
 		return TiDBRunning, nil
-	case "Runing":
+	case "Running":
 		return TiDBRunning, nil
 	case "Stoped":
 		return TiDBStoped, nil
