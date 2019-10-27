@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -60,7 +61,7 @@ func (c *Client) CreateTiDBCluster(tc *models.TiDBCluster) error {
 		"host":        tc.Host,
 		"status":      tc.Status,
 		"description": tc.Description,
-		"initTime":    tc.InitTime,
+		//"initTime":    tc.InitTime,
 	}
 	_, err := postRpcCall("/api/createtidbcluster", params)
 	if err != nil {
@@ -70,6 +71,20 @@ func (c *Client) CreateTiDBCluster(tc *models.TiDBCluster) error {
 }
 
 func (c *Client) UpdateTiDBCluster(tc *models.TiDBCluster) error {
+	params := map[string]interface{}{
+		"id":          strconv.FormatInt(tc.ID, 10),
+		"name":        tc.Name,
+		"version":     tc.Version,
+		"path":        tc.Path,
+		"host":        tc.Host,
+		"status":      tc.Status,
+		"description": tc.Description,
+		"initTime":    tc.InitTime.Format("2006-01-02 15:04:05"),
+	}
+	_, err := postRpcCall("/api/updatetidbcluster", params)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

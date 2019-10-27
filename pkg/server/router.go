@@ -22,6 +22,7 @@ func Router(r *gin.Engine) {
 	r.GET("api/gettidbclustersbyname", api.GetTiDBClustersByName)
 	r.GET("api/gettidbclustersbyhost", api.GetTiDBClustersByHost)
 	r.GET("api/searchtidbclusters", api.SearchTiDBClusters)
+	r.POST("api/updatetidbcluster", api.UpdateTiDBClusters)
 
 	r.GET("index", web.Index)
 }

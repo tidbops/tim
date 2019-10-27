@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tidbops/tim/pkg/models"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -77,7 +78,7 @@ func CreateTiDBCluster(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"code": 10, "msg": fmt.Sprintf("store tidb cluster information failed, %v", err)})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success", "data": tc})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success", "data": []*models.TiDBCluster{tc}})
 }
 
 func SearchTiDBClusters(c *gin.Context) {
@@ -100,4 +101,41 @@ func SearchTiDBClusters(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success", "data": tc})
+}
+
+func UpdateTiDBClusters(c *gin.Context) {
+	id := c.PostForm("id")
+	name := c.PostForm("name")
+	version := c.PostForm("version")
+	path := c.PostForm("path")
+	host := c.PostForm("host")
+	status := c.PostForm("status")
+	dateTime := c.PostForm("time")
+	desc := c.PostForm("description")
+
+	idInt64, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"code": 10, "msg": fmt.Sprintf("ID invaild, %v", id)})
+		return
+	}
+	if _, err := models.JudgeTiDBStatusType(status); err != nil {
+		c.JSON(http.StatusOK, gin.H{"code": 10, "msg": fmt.Sprintf("TiDBStatus invaild, %v", status)})
+		return
+	}
+	t, _ := time.Parse("2006-01-02 15:04:05", dateTime)
+	tc := &models.TiDBCluster{
+		ID:          idInt64,
+		Name:        name,
+		Version:     version,
+		Path:        path,
+		Host:        host,
+		Status:      status,
+		Description: desc,
+		InitTime:    t,
+	}
+	if err := models.UpdateTiDBCluster(tc); err != nil {
+		c.JSON(http.StatusOK, gin.H{"code": 10, "msg": fmt.Sprintf("update tidb cluster information failed, %v", err)})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success", "data": []*models.TiDBCluster{tc}})
 }
