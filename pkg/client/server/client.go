@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -71,7 +72,7 @@ func (c *Client) CreateTiDBCluster(tc *models.TiDBCluster) error {
 
 func (c *Client) UpdateTiDBCluster(tc *models.TiDBCluster) error {
 	params := map[string]interface{}{
-		"id":          tc.ID,
+		"id":          strconv.FormatInt(tc.ID, 10),
 		"name":        tc.Name,
 		"version":     tc.Version,
 		"path":        tc.Path,
