@@ -27,6 +27,8 @@ func JudgeTiDBStatusType(this string) (TiDBStatus, error) {
 		return TiDBStoped, nil
 	case "Upgrading":
 		return TiDBUpgrading, nil
+	case "WaitingUpgrade":
+		return TiDBWaitingUpgrade, nil
 	default:
 		return "", fmt.Errorf("Unknow TiDBStatus")
 	}
