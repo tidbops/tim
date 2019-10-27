@@ -222,6 +222,12 @@ func upgradeCommandFunc(cmd *cobra.Command, args []string) {
 		cmd.Println(rStdoutErr)
 		return
 	}
+
+	tc.Status = models.TiDBRunning
+	if err := cli.UpdateTiDBCluster(tc); err != nil {
+		cmd.Println(err)
+		return
+	}
 	cmd.Println("Success!!!")
 }
 
